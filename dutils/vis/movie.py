@@ -7,20 +7,30 @@ import numpy as np
 from PIL import Image
 
 class GenAVI(object):
-    def __init__(self, img_list, dst, numh=1, numw=1,):
+    def __init__(self, img_list, dst, numh=1, numw=1):
         # put same frame in list if multi
+        # format be like: [imgsA_list, imgsB_list, ...]
+        assert len(img_list) > 1, "number of imgs must large than 1"
         self.img_list = img_list
         self.show_multi = numh * numw > 1
+        self.numh = numh
+        self.numw = numw
         self.dst = dst
+        self._lens = len(img_list)
         if self.show_multi:
             assert len(img_list[0]) == numh * numw
     
+    def __repr__(self):
+        _msg =  f"Show Multi={self.show_multi}, \n" + \
+                f"Length of ImgList={self._lens}, \n" + \
+                f"numh, numw={self.numh}, {self.numw} ."                
+        return _msg
+    
     def make(self, fps=10):
         if self.show_multi:
-            make_multi_avi(self.img_list, numh, numw, self.dist, fps=10)
+            make_multi_avi(self.img_list, self.numh, self.numw, self.dist, fps=10)
         else:
             make_avi(self.img_list, avi_path=self.dst, fps=fps)
-    
     
 def show_two_gif(targets, preds, new_path="./merge.gif"):
     # use hstack merge gif
@@ -179,5 +189,3 @@ def make_left_gif_right_static(gif_imgs, static_img, img_size, gif_path="./left_
         imgs.append(merge_img)
     
     imageio.mimsave(gif_path, imgs, **kwargs)
-
-

@@ -1,11 +1,11 @@
 import torch
+import numpy as np
 
 class CData:
     def __init__(self, data, expand=True, to_tensor=True):
         self._data = data
         self._expand = expand
         self._tt = to_tensor
-        self._tl = to_list
 
     @property
     def to_tensor(self):
@@ -52,7 +52,7 @@ def cdata_collate_fn(batch, data_keys=None):
                 collate_datas[i].append(d)
 
     _try_data = batch[0]
-    for i,d in try_data:
+    for i,d in _try_data:
         if d.to_tensor:
             collate_datas[i] = to_tensor(np.concatenate(collate_datas[i], axis=0))
         else:
@@ -66,4 +66,3 @@ def cdata_collate_fn(batch, data_keys=None):
         return return_data
 
     return collate_data
-

@@ -8,3 +8,13 @@ def undistort(img, intrinsic, distortion):
 def resize_img(img, imgh, imgw, dtype=np.float32):
     img = cv2.resize(img, (imgw, imgh), interpolation=cv2.INTER_LINEAR).astype(dtype)
     return img
+
+def normalize(inputs, mean, std):
+    # inputs: C, H, W,  normalize to [-1, 1]
+    inputs = inputs / 255
+    mean = np.array(mean)
+    std  = np.array(std)
+    mean = mean[:, None, None]
+    std  = std[:, None, None]
+    out = (inputs - mean) / std
+    return out

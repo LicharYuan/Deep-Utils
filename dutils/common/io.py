@@ -1,11 +1,11 @@
 
+# IO
 import os
 import json
 import pickle 
 import pyarrow as pa
 import pickle as pkl
 import numpy as np
-from dutils.common import check_path
 
 __all__ = ["load_json", "save_pkl", "save_json", "load_pkl", 
           "assert_path", ]

@@ -8,16 +8,18 @@ class DrawImg(object):
     def draw_mask(self, mask):
         draw_mask_on_imgs(self.img, mask[None,:])
     
-    def draw_bbox(self, bbox, text=None, title=None):
-        draw_bboxes_on_imgs(self.img, bbox[None,:], text=text, title=title)
-       
+    def draw_bbox(self, bbox, text=None, title=None, loc="bl"):
+        if not isinstance(bbox[0], np.ndarray):
+            bbox = bbox[None,:]
+        draw_bboxes_on_imgs(self.img, bbox, text=text, title=title, loc=loc)
+    
     def save(self, savepath):
         cv2.imwrite(savepath, self.img)
     
     def show(self, name=None):
-        name = name if name else self.name
+        name = str(name) if name else self.name
         show_img(self.img, name)
-        
+
         
 def show_img(img, name="img", resize=False):
     cv2.namedWindow(name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)

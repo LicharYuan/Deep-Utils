@@ -19,7 +19,7 @@ def get_install_requires():
     return install_requires
 
 setuptools.setup(
-    name="TUtils", 
+    name="dutils", 
     version="0.0.1",
     author="Liuchun Yuan",
     author_email="ylc0003@gmail.com",

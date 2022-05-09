@@ -73,3 +73,9 @@ def cal_ious_2d(bboxes1, bboxes2, eps=1e-5):
         ious = ious.T
 
     return ious
+
+
+def is_partial(bbox, h, w):
+    x1, y1, x2, y2 = bbox[:4]
+    partial_flag = x1 < w * 0.02  or x2 > w * 0.98 or y1 < h * 0.02 or y2 > h * 0.98
+    return partial_flag
