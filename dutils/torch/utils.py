@@ -1,4 +1,4 @@
-"""contains lr sche / meters / mem stat """
+"""contains load model / lr sche / meters / mem stat / train """
 import math
 from functools import partial
 import random
@@ -7,6 +7,93 @@ import torch
 from collections import defaultdict, deque
 import time
 import os
+
+from copy import deepcopy
+import torch.nn as nn
+
+def reproduce(seed, deterministic=True, benchmark=True):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = deterministic
+    # set True to fix cudnn algorithm
+    torch.backends.cudnn.benchmark = benchmark
+    # set True to find fast algorithm can speed up training (under fixed input size), 
+    # But the result may not stable.(~0.3%)
+    # if you want to reproduce you experiments, set benchmark as False
+
+
+# --------------------- mem --------------------
+def load_model(model, ckpt, strict=True):
+    if isinstance(ckpt, dict):
+        ckpt = ckpt 
+    elif isinstance(ckpt, str):
+        ckpt = torch.load(ckpt)
+        if "state_dict" in ckpt: ckpt = ckpt["state_dict"]
+    model_state_dict = model.state_dict()
+    load_dict= {}
+    _strict_flag = False
+
+    if not strict:
+        print(f"Checkpoint keys: {ckpt.keys()}")
+
+    for key_model, v in model_state_dict.items():
+        if key_model not in ckpt.keys():
+            print(f"{key_model} not in Checkpoint")
+            continue
+        v_ckpt = ckpt[key_model]
+
+        if v.shape != v_ckpt.shape:
+            print(f"{key_model}: Checkpoint Shape is {v_ckpt.shape}, Model Shape is {v.shape}")
+            _strict_flag = True
+            continue
+
+        if _strict_flag and strict:
+            exit("Strict Load model")
+
+        load_dict[key_model] = v_ckpt
+
+    model.load_state_dict(load_dict, strict=strict) 
+    del load_dict
+    return model
+
+def load_optim(optim, optim_kwargs):
+    optim.load_state_dict(optim_kwargs)
+
+def is_parallel(model):
+    """check if model is in parallel mode."""
+    parallel_type = (
+        nn.parallel.DataParallel,
+        nn.parallel.DistributedDataParallel,
+    )
+    return isinstance(model, parallel_type)
+
+def save_ckpt(state_dict, save_file):
+    torch.save(state_dict, save_file)
+
+class ModelEMA:
+    def __init__(self, model, decay=0.9999, updates=0):
+        self.ema = deepcopy(model.module if is_parallel(model) else model).eval()
+        self.updates = updates
+        self.decay = lambda x: decay * (1 - math.exp((-x) / 2000))
+        # add weight to aviod early stage epochs perform poor
+        for p in self.ema.parameters():
+            p.requires_grad_(False)
+    
+    def update(self, model):
+        with torch.no_grad():
+            self.updates += 1
+            d = self.decay(self.updates)
+            msd = (
+                model.module.state_dict() if is_parallel(model) else model.state_dict()
+            )
+            for k,v in self.ema.state_dict().items():
+                if v.dtype.is_floating_point:
+                    v *= d
+                    v += (1.0 - d) * msd[k].detach()
+
+
 
 # --------------------- mem --------------------
 def get_total_and_free_memory_in_Mb(cuda_device):
@@ -188,3 +275,7 @@ class MeterBuffer(defaultdict):
     def clear_meters(self):
         for v in self.values():
             v.clear()
+
+
+# alias
+load_ckpt = load_model

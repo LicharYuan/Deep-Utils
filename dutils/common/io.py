@@ -6,15 +6,27 @@ import pickle
 import pyarrow as pa
 import pickle as pkl
 import numpy as np
+import yaml
 
-__all__ = ["load_json", "save_pkl", "save_json", "load_pkl", 
-          "assert_path", ]
+__all__ = ["load_json", "save_pkl", "save_json", "load_pkl", "save_yaml", "load_yaml",
+          "assert_path", "read_roidb", "read_npz", "read_npy"]
 
 def load_json(json_file):
     assert os.path.exists(json_file)
     with open(json_file, "r") as f:
         res = json.load(f)
     return res
+
+def save_yaml(filename, data):
+    with open(filename, 'w') as outfile:
+        yaml.dump(data, outfile, default_flow_style=False)
+
+def load_yaml(filename):
+    with open(filename, "r") as stream:
+        try:
+            print(yaml.safe_load(stream))
+        except yaml.YAMLError as exc:
+            print(exc)
 
 def assert_path(path):
     if isinstance(path, (list, tuple)):

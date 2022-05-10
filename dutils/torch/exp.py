@@ -1,19 +1,27 @@
 from abc import ABCMeta, abstractmethod
 import pprint, ast
-import tabulate
+from tabnanny import check
+from tabulate import tabulate
 from dutils.common import get_timestamp
 import os.path as osp
+from dutils.common.utils import check_path
+import numpy as np
+import yaml
+from dutils.common import save_json, save_yaml, save_pkl
 
 class BaseExp(metaclass=ABCMeta):
     def __init__(self, **kwargs):
 
         self._build_independ_config()
-        self.update(kwargs)
+        self.update(**kwargs)
         self._build_depend_config()
 
         self.exp_name = self.__class__.__name__
+        self.outdir = "./results"
+        self._repr_keys = []
         
     def update(self, **kwargs):
+        # only support update for int/float/bool
         for k, v in kwargs.items():
             if hasattr(self, k):
                 # Type check
@@ -41,13 +49,28 @@ class BaseExp(metaclass=ABCMeta):
         ]
         return tabulate(exp_table, headers=table_header, tablefmt="fancy_grid")
 
-    def output(self, outdir, exp_name, time=True):
+    def output(self, time=True):
         if time:
-            return osp.join(outdir, exp_name, get_timestamp())
+            return osp.join(self.outdir, self.exp_name, get_timestamp())
         else:
-            return osp.join(outdir, exp_name)
+            return osp.join(self.outdir, self.exp_name)
 
-
+    def dump(self, save=None):
+        # save config if type is int/float/str/bool/array
+        exp_config = {}
+        for k, v in vars(self).items():
+            if isinstance(v, (int, float, bool, str, np.ndarray, list, tuple, dict)):
+                if isinstance(v, np.ndarray):
+                    v = v.tolist()
+                    
+                exp_config[k] = v
+        if save:
+            dump_file = save
+        else:
+            check_path(osp.join(self.outdir, self.exp_name))
+            dump_file = osp.join(self.outdir, self.exp_name, "exp.yaml")
+            
+        save_yaml(dump_file, exp_config)
 
     @abstractmethod
     def _build_independ_config(self):

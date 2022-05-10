@@ -3,8 +3,9 @@ from datetime import date
 from datetime import datetime
 import argparse
 import glob
+import numpy as np
 
-__all__ = ['check_path', 'get_today', 'quick_str_args', 'glob_file_in_dir', 'get_timestamp']
+__all__ = ['check_path', 'get_today', 'quick_str_args', 'glob_file_in_dir', 'get_timestamp', 'logical_and']
 
 def check_path(path):
     if not os.path.exists(path):
@@ -28,5 +29,23 @@ def glob_file_in_dir(dir, must_key):
 
 def get_timestamp():
     # till seconds
-    timestamp = datetime.datetime.now().strftime("%y_%m_%d-%H_%M_%S")
+    timestamp = datetime.now().strftime("%y_%m_%d-%H_%M_%S")
     return timestamp
+
+
+def logical_and(a, b, *args):
+    mask_and = np.logical_and(a, b)
+    for ele in args:
+        mask_and = np.logical_and(mask_and, ele)
+    return mask_and
+
+def is_increase_arr(array):
+    first = array[0]
+    for ele in array[1:]:
+        flag = ele > first
+        first = ele
+        if flag is False:
+            return False
+    return True
+
+    

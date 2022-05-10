@@ -49,7 +49,7 @@ class CorMetric(object):
         kt, _   = kendalltau(a, b)
 
         print("spearman cor:", scor)
-        print("pearson cor:", scor)
+        print("pearson cor:", pcor)
         print("kendall rank:", kt)
 
 

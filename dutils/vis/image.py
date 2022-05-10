@@ -1,5 +1,6 @@
 import cv2
-    
+import numpy as np
+
 class DrawImg(object):
     def __init__(self, img):
         self.img = img
@@ -29,34 +30,48 @@ def show_img(img, name="img", resize=False):
     key = cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None):
-    # text will add in leftCorner of bboxes
-    cimg = img
+def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="bl"):
     imgh, imgw = img.shape[:2]
     for i, bbox in enumerate(bboxes):        
         x1,y1,x2,y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
         width = x2-x1
         height = y2-y1
-        cimg = cv2.rectangle(cimg, (x1, y2), (x2, y1), (255,0,0), 2)
+        img = cv2.rectangle(img, (x1, y2), (x2, y1), (255,0,0), 2)
         if text is not None:
             bottomLeftCornerOfText = (x1, y2)
+            TopLeftCornerOfText = (x1, y1)
+            bottomRightCornerOfText = (x2, y2)
+            TopRightCornerOfText = (x2, y1)
+            if loc == "bl":
+                position = bottomLeftCornerOfText
+            elif loc == "tl":
+                position = TopLeftCornerOfText
+            elif loc == "br":
+                position = bottomRightCornerOfText
+            elif loc == "tr":
+                position = TopRightCornerOfText
+            else:
+                # default
+                position = bottomLeftCornerOfText
+                
             font                   = cv2.FONT_HERSHEY_SIMPLEX
             fontColor              = (0,0,255)
             thickness = 2 
-            fontscale = 0.5
-            cimg = cv2.putText(cimg, text[i], bottomLeftCornerOfText, font, fontscale, fontColor, thickness)
+            fontscale = 0.8
+            img = cv2.putText(img, text[i], position, font, fontscale, fontColor, thickness)
         
     if title:
         fontColor = (255, 255, 255)
         font                   = cv2.FONT_HERSHEY_SIMPLEX
         thickness = 2
-        fontscale = 0.5
-        cimg = cv2.putText(cimg, title, (imgw//2, imgh-20), font, fontscale, fontColor, thickness)
+        fontscale = 0.8
+        img = cv2.putText(img, title, (imgw//2, imgh-20), font, fontscale, fontColor, thickness)
 
     if savepath is not None:
-        cv2.imwrite(savepath, cimg)
+        cv2.imwrite(savepath, img)
 
-    return cimg
+    return img
+    
 
 def draw_mask_on_imgs(img, masks, savepath=None):
     for mask in masks:

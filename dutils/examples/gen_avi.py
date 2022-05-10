@@ -1,4 +1,4 @@
-from dutils.visualize import GenAVI
+from dutils.vis import GenAVI
 from dutils.common import wrap_args, glob_file_in_dir, check_path
 import os
 
