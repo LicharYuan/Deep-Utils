@@ -21,7 +21,6 @@ class DrawPts(object):
     def all(self):
         plot_all(self.pts, savepath=self.save)
 
-
 def plot_bev(points, xid=0, yid=1, color="r", savepath=None):
     plt.figure(figsize=(100, 100))
     plt.scatter(points[:,xid], points[:,yid], s=0.5, c=color)  

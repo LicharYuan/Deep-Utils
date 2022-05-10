@@ -2,17 +2,18 @@ import cv2
 import numpy as np
 
 class DrawImg(object):
+    """In-place draw"""
     def __init__(self, img):
         self.img = img
-        self.name = self.__class__.__name__
+        self.name = self.__class__.__name__ # show windows name
 
     def draw_mask(self, mask):
         draw_mask_on_imgs(self.img, mask[None,:])
     
-    def draw_bbox(self, bbox, text=None, title=None, loc="bl"):
+    def draw_bbox(self, bbox, text=None, title=None, loc="bl", tsize=0.5):
         if not isinstance(bbox[0], np.ndarray):
             bbox = bbox[None,:]
-        draw_bboxes_on_imgs(self.img, bbox, text=text, title=title, loc=loc)
+        draw_bboxes_on_imgs(self.img, bbox, text=text, title=title, loc=loc, text_scale=tsize)
     
     def save(self, savepath):
         cv2.imwrite(savepath, self.img)
@@ -21,7 +22,6 @@ class DrawImg(object):
         name = str(name) if name else self.name
         show_img(self.img, name)
 
-        
 def show_img(img, name="img", resize=False):
     cv2.namedWindow(name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
     if resize:
@@ -30,7 +30,7 @@ def show_img(img, name="img", resize=False):
     key = cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="bl"):
+def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="bl", text_scale=0.5):
     imgh, imgw = img.shape[:2]
     for i, bbox in enumerate(bboxes):        
         x1,y1,x2,y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
@@ -57,7 +57,7 @@ def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="
             font                   = cv2.FONT_HERSHEY_SIMPLEX
             fontColor              = (0,0,255)
             thickness = 2 
-            fontscale = 0.8
+            fontscale = text_scale
             img = cv2.putText(img, text[i], position, font, fontscale, fontColor, thickness)
         
     if title:

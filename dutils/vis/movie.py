@@ -1,5 +1,7 @@
 
+from dutils.process.image import resize_img
 import imageio
+import skvideo
 import os
 from skimage.transform import resize
 import cv2
@@ -18,7 +20,7 @@ class GenAVI(object):
         self.dst = dst
         self._lens = len(img_list)
         if self.show_multi:
-            assert len(img_list[0]) == numh * numw
+            assert len(img_list) == numh * numw,  f"{len(img_list)}, {numh}, {numw}"
     
     def __repr__(self):
         _msg =  f"Show Multi={self.show_multi}, \n" + \
@@ -28,7 +30,7 @@ class GenAVI(object):
     
     def make(self, fps=10):
         if self.show_multi:
-            make_multi_avi(self.img_list, self.numh, self.numw, self.dist, fps=10)
+            make_multi_avi(self.img_list, self.numh, self.numw, self.dst, fps=10)
         else:
             make_avi(self.img_list, avi_path=self.dst, fps=fps)
     
@@ -143,22 +145,30 @@ def make_avi(img_list, avi_path="./tmp.avi", img_size=None, fps=10,):
 
 def make_multi_avi(img_lists, numh, numw, avi_path="./tmp.avi", img_size=None, fps=10, ):
     # same frame [[imga1, imgb1, imgc1, imgd1], ... ]
-    assert avi_path.endswith(".avi")
+    assert avi_path.endswith(".avi") 
     if img_size is None:
         # use first img shape as default
-        img_size = cv2.imread(img_list[0][0]).shape[:2]  
-        h, w = img_size
-        img_size = (w, h)
-    avi_size = (w*numw, h*numh)
+        img_size = cv2.imread(img_lists[0][0]).shape[:2]  
+    h, w = img_size
+    avi_size = (w*numw, h*numh, ) # weight, height
+    num_frame = min([len(ele) for ele in img_lists])
+    # num_frame = 10
     out = cv2.VideoWriter(avi_path, cv2.VideoWriter_fourcc(*'XVID'), fps, avi_size)
-    for img_list in enumerate(img_lists):
-        frame_img = np.zeros((h*numh, w*numw, 3))
-        for i, img in emumerate(img_list):
-            img = cv2.resize(cv2.imread(img), img_size)
-            _indexh = i // h
-            _indexw = i % w
-            frame_img[_indexh*h:_indexh*h+h, _indexw*w:_indexw*w+w] = img
-            out.write(frame_img)
+    for frame_idx in range(num_frame):
+        each_pair = [ele[frame_idx] for ele in img_lists]
+        frame_img = np.empty([h*numh, w*numw, 3], dtype=np.uint8)
+        for idx, img in enumerate(each_pair):
+            try:
+                img = cv2.imread(img)
+                img = resize_img(img, h, w)
+            except SystemError as e:
+                print(idx, each_pair, "loc error")
+                exit()
+            _indexh = idx // h
+            _indexw = idx % w
+            frame_img[_indexh*h:_indexh*h+h, _indexw*w:_indexw*w+w] = img            
+        
+        out.write(frame_img)  
     out.release()
 
 def make_dir_avi(fdir, avi_path="./tmp.avi", img_size=None, fps=10):

@@ -7,8 +7,6 @@ Modules:
 - metrics: get correaltion, statics for metrics
 - examples: some examples to use
 
-
-
 # Visualize
 
 - Make avi for directory
@@ -17,10 +15,3 @@ Modules:
 cd examples
 python gen_avi.py --dir ./data/imgs  --save ./results 
 ```
-
-- 
-
-
-
-
-
