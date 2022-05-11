@@ -19,6 +19,8 @@ def quick_str_args(name="quick args", *args, **kwargs):
     for ele in args:
         parser.add_argument(f"--{ele}", default=None, type=str)
     for key, value in kwargs.items():
+        allow_types = [str, int, float]
+        assert value in allow_types, "quick args only support {}".format(allow_types)
         parser.add_argument(f"--{key}", default=None, type=value)
     args = parser.parse_args()
     return args

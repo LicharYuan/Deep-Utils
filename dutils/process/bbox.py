@@ -74,6 +74,36 @@ def cal_ious_2d(bboxes1, bboxes2, eps=1e-5):
 
     return ious
 
+def cal_ioss_2d(bboxes1, bboxes2, eps=1e-5):
+    # ios between bboxes
+    bboxes1 = bboxes1.astype(np.float32)
+    bboxes2 = bboxes2.astype(np.float32)
+    rows = bboxes1.shape[0]
+    cols = bboxes2.shape[0]
+    ioss = np.zeros((rows, cols), dtype=np.float32)
+    if rows * cols == 0:
+        return ioss
+
+    exchange = False
+    if bboxes1.shape[0] > bboxes2.shape[0]:
+        bboxes1, bboxes2 = bboxes2, bboxes1
+        ioss = np.zeros((cols, rows), dtype=np.float32)
+        exchange = True
+    area1 = (bboxes1[:, 2] - bboxes1[:, 0]) * (bboxes1[:, 3] - bboxes1[:, 1])
+    for i in range(bboxes1.shape[0]):
+        x_start = np.maximum(bboxes1[i, 0], bboxes2[:, 0])
+        y_start = np.maximum(bboxes1[i, 1], bboxes2[:, 1])
+        x_end = np.minimum(bboxes1[i, 2], bboxes2[:, 2])
+        y_end = np.minimum(bboxes1[i, 3], bboxes2[:, 3])
+        overlap = np.maximum(x_end - x_start, 0) * np.maximum(
+            y_end - y_start, 0)
+        self_bbox = area1
+        ioss[i, :] = overlap / self_bbox
+    if exchange:
+        ioss = ioss.T
+    return ioss
+
+
 
 def is_partial(bbox, h, w):
     x1, y1, x2, y2 = bbox[:4]
