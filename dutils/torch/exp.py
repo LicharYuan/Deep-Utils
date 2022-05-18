@@ -45,7 +45,7 @@ class BaseExp(metaclass=ABCMeta):
         exp_table = [
             (str(k), pprint.pformat(v))
             for k, v in vars(self).items()
-            if k in self._repr_keys
+            if k in sorted(self._repr_keys)
         ]
         return tabulate(exp_table, headers=table_header, tablefmt="fancy_grid")
 

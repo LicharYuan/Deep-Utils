@@ -18,3 +18,7 @@ def normalize(inputs, mean, std):
     std  = std[:, None, None]
     out = (inputs - mean) / std
     return out
+
+def stack_2images(img1, img2, weights=0.5):
+    stack_img = cv2.addWeighted(img1, weights, img2, 1-weights, 0)
+    return stack_img

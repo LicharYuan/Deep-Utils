@@ -76,4 +76,3 @@ def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="
 def draw_mask_on_imgs(img, masks, savepath=None):
     for mask in masks:
         cv2.drawContours(img, mask, -1, (0, 255, 0), 2)    
-

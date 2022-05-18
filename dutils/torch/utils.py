@@ -240,6 +240,10 @@ class AverageMeter:
     @property
     def total(self):
         return self._total
+    
+    @property
+    def array(self):
+        return np.array(list(self._deque))
 
     def reset(self):
         self._deque.clear()

@@ -15,3 +15,23 @@ Modules:
 cd examples
 python gen_avi.py --dir ./data/imgs  --save ./results 
 ```
+
+
+# Wrapper
+
+- Log
+
+```python
+from dutils.common import wrap_args, wrap_log
+
+@wrap_log(outfile="./test_wrap_log.log" name="debug")
+def test():
+    print("test wrap log")
+
+
+if __name__ == "__main__":
+    test()
+```
+
+- Args
+

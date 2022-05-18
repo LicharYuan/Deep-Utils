@@ -1,7 +1,6 @@
 
 from dutils.process.image import resize_img
 import imageio
-import skvideo
 import os
 from skimage.transform import resize
 import cv2
@@ -33,7 +32,18 @@ class GenAVI(object):
             make_multi_avi(self.img_list, self.numh, self.numw, self.dst, fps=10)
         else:
             make_avi(self.img_list, avi_path=self.dst, fps=fps)
+
+class GenGIF(object):
+    # not support multi gif yet
+    def __init__(self, img_list, dst):
+        self.imgs = img_list
+        self.dst = dst
     
+    def make(self, fps=1):
+        make_gif(self.imgs, self.dst, fps=fps)
+
+    
+
 def show_two_gif(targets, preds, new_path="./merge.gif"):
     # use hstack merge gif
     gif1 = imageio.get_reader(targets)
