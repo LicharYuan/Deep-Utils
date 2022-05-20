@@ -3,10 +3,20 @@ from datetime import date
 from datetime import datetime
 import argparse
 import glob
+import uuid
 import numpy as np
 
-__all__ = ['check_path', 'get_today', 'quick_str_args', 'glob_file_in_dir', 'get_timestamp', 'logical_and']
+__all__ = ['check_path', 'get_today', 'quick_str_args', 'glob_file_in_dir', 'get_timestamp', 'logical_and', 
+           'gen_random_file',
+        ]
 
+def gen_random_file(root, suffix=".json", prefix=""):
+    check_path(root)
+    _random_name = str(uuid.uuid4())
+    _random_name = prefix + _random_name + suffix
+    path = os.path.join(root, _random_name)
+    return path
+    
 def check_path(path):
     if not os.path.exists(path):
         os.makedirs(path,  exist_ok=True) # mp 

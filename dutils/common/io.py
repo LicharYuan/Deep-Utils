@@ -7,9 +7,10 @@ import pyarrow as pa
 import pickle as pkl
 import numpy as np
 import yaml
-
+import uuid
 __all__ = ["load_json", "save_pkl", "save_json", "load_pkl", "save_yaml", "load_yaml",
           "assert_path", "read_roidb", "read_npz", "read_npy"]
+
 
 def load_json(json_file):
     assert os.path.exists(json_file)
@@ -72,3 +73,4 @@ def read_npz(path):
 
 def read_npy(path):
     return np.load(path)
+

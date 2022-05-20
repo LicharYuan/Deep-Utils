@@ -19,6 +19,8 @@ python gen_avi.py --dir ./data/imgs  --save ./results
 
 # Wrapper
 
+**Wrap will set global args inside, It may make some problems.**
+
 - Log
 
 ```python
@@ -34,4 +36,16 @@ if __name__ == "__main__":
 ```
 
 - Args
+
+```python
+@wrap_args("test", "a", "b", c=list,) 
+def test_args():
+    print(wargs.a) # default type:str, value: None
+    print(wargs.b)
+    print(type(wargs.c))
+```
+
+
+
+
 
