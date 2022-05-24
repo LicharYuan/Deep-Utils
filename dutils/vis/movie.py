@@ -160,7 +160,7 @@ def make_multi_avi(img_lists, numh, numw, avi_path="./tmp.avi", img_size=None, f
         # use first img shape as default
         img_size = cv2.imread(img_lists[0][0]).shape[:2]  
     h, w = img_size
-    avi_size = (w*numw, h*numh, ) # weight, height
+    avi_size = (w*numw, h*numh, ) # width, height
     num_frame = min([len(ele) for ele in img_lists])
     # num_frame = 10
     out = cv2.VideoWriter(avi_path, cv2.VideoWriter_fourcc(*'XVID'), fps, avi_size)
@@ -174,9 +174,16 @@ def make_multi_avi(img_lists, numh, numw, avi_path="./tmp.avi", img_size=None, f
             except SystemError as e:
                 print(idx, each_pair, "loc error")
                 exit()
-            _indexh = idx // h
-            _indexw = idx % w
-            frame_img[_indexh*h:_indexh*h+h, _indexw*w:_indexw*w+w] = img            
+            """
+            H
+            |0 1 2 
+            |3 4 5
+            ------- W
+            """
+            _indexh = idx  // numw # 0 // 3 = 0, 1//3=0,  2//3 = 1
+            _indexw = idx  %  numw # 3 % 2 = 1 
+            frame_img[_indexh*h:_indexh*h+h, _indexw*w:_indexw*w+w, :] = img           
+
         
         out.write(frame_img)  
     out.release()

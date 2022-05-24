@@ -7,8 +7,9 @@ import uuid
 import numpy as np
 
 __all__ = ['check_path', 'get_today', 'quick_str_args', 'glob_file_in_dir', 'get_timestamp', 'logical_and', 
-           'gen_random_file',
+           'gen_random_file', 'is_increase_arr',
         ]
+
 
 def gen_random_file(root, suffix=".json", prefix=""):
     check_path(root)
