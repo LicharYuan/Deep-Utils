@@ -184,7 +184,6 @@ def make_multi_avi(img_lists, numh, numw, avi_path="./tmp.avi", img_size=None, f
             _indexw = idx  %  numw # 3 % 2 = 1 
             frame_img[_indexh*h:_indexh*h+h, _indexw*w:_indexw*w+w, :] = img           
 
-        
         out.write(frame_img)  
     out.release()
 

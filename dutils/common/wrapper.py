@@ -6,7 +6,7 @@ from functools import wraps, partial
 __all__ = ["wrap_log", "wrap_args"]
 
 # quick record log
-def wrap_log(outfile="./debug.log", name=""):
+def wrap_log(outfile="./debug.log", name="", verbose=True):
     """ the outputs log save in  "./xx.log" , name is prefix"""
     def _logg(func):
         logger = MyLogger(outfile, name=name)
@@ -16,10 +16,12 @@ def wrap_log(outfile="./debug.log", name=""):
             g = func.__globals__
             g["print"] = logger.info # replace print with logger.info
             g["logger"] = logger
-            logger.info("Execute:", func.__name__)
+            if verbose:
+                logger.info("Execute:", func.__name__)
             res = func(*args, **kwargs)
             toc = time.time()
-            logger.info("Done , cost time:{0:2f}s".format(toc-tic))
+            if verbose:
+                logger.info("Done , cost time:{0:2f}s".format(toc-tic))
             return res
         return log_func
     return _logg

@@ -11,14 +11,15 @@ from dutils.common import save_json, save_yaml, save_pkl
 
 class BaseExp(metaclass=ABCMeta):
     def __init__(self, **kwargs):
-
+        
+        self.exp_name = self.__class__.__name__
+        self.outdir = "./results"
+        self._repr_keys = []
+        
         self._build_independ_config()
         self.update(**kwargs)
         self._build_depend_config()
 
-        self.exp_name = self.__class__.__name__
-        self.outdir = "./results"
-        self._repr_keys = []
         
     def update(self, **kwargs):
         # only support update for int/float/bool

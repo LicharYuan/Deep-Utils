@@ -74,3 +74,8 @@ def read_npz(path):
 def read_npy(path):
     return np.load(path)
 
+def update_to_json(save_path, update_data):
+    data = load_json(save_path)
+    assert isinstance(data, dict)
+    data.update(update_data)
+    save_json(save_path, data)

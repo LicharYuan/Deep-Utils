@@ -6,9 +6,30 @@ def undistort(img, intrinsic, distortion):
     dst = cv2.undistort(img,  intrinsic, distortion, None, intrinsic)
     return dst
 
+def read_img(img_path):
+    img = cv2.imread(img_path)
+    return img
+
 def resize_img(img, imgh, imgw, dtype=np.float32):
     img = cv2.resize(img, (imgw, imgh), interpolation=cv2.INTER_LINEAR).astype(dtype)
     return img
+
+def cat_2img(img1, img2):
+    """ along x-axis cat
+    Args:
+        img1 (_type_): imread img1
+        img2 (_type_): imread img2
+    """
+    h1, w1 = img1.shape[:2]
+    h2, w2 = img2.shape[:2]
+    h = max(h1, h2)
+    w = max(w1, w2)
+    new_ = np.zeros((h, w*2, 3))
+    
+    new_[:h1,:w1,:] = img1
+    new_[:h2, w:w+w2, :] = img2
+    return new_
+
 
 def normalize(inputs, mean, std):
     # inputs: C, H, W,  normalize to [-1, 1]
