@@ -5,6 +5,7 @@ class DrawImg(object):
     """In-place draw"""
     def __init__(self, img):
         self.img = img
+        self.imgh, self.imgw = img.shape[:2]
         self.name = self.__class__.__name__ # show windows name
 
     def draw_mask(self, mask):
@@ -21,6 +22,19 @@ class DrawImg(object):
     def show(self, name=None):
         name = str(name) if name else self.name
         show_img(self.img, name)
+    
+    def add_title(self, title=None, loc="bottom"):
+        fontColor = (255, 255, 255)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        thickness = 2
+        fontscale = 0.8
+        if loc == "bottom":
+            pos = (10, self.imgh - 20)
+        elif loc == "top":
+            pos = (10, 20)
+        img = cv2.putText(self.img, title, pos, font, fontscale, fontColor, thickness)
+        return img
+
 
 def show_img(img, name="img", resize=False):
     cv2.namedWindow(name, cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)
