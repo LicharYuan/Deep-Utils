@@ -11,10 +11,10 @@ class DrawImg(object):
     def draw_mask(self, mask):
         draw_mask_on_imgs(self.img, mask[None,:])
     
-    def draw_bbox(self, bbox, text=None, title=None, loc="bl", tsize=0.5):
+    def draw_bbox(self, bbox, text=None, title=None, loc="bl", tsize=0.5, **kwargs):
         if not isinstance(bbox[0], np.ndarray):
             bbox = bbox[None,:]
-        draw_bboxes_on_imgs(self.img, bbox, text=text, title=title, loc=loc, text_scale=tsize)
+        draw_bboxes_on_imgs(self.img, bbox, text=text, title=title, loc=loc, text_scale=tsize, **kwargs)
     
     def save(self, savepath):
         cv2.imwrite(savepath, self.img)
@@ -44,13 +44,14 @@ def show_img(img, name="img", resize=False):
     key = cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="bl", text_scale=0.5):
+def draw_bboxes_on_imgs(img, bboxes, savepath=None, text=None, title=None, loc="bl", text_scale=0.5, bcolor=None):
     imgh, imgw = img.shape[:2]
     for i, bbox in enumerate(bboxes):        
         x1,y1,x2,y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
         width = x2-x1
         height = y2-y1
-        img = cv2.rectangle(img, (x1, y2), (x2, y1), (255,0,0), 2)
+        bcolor = bcolor if bcolor else (255, 0, 0)
+        img = cv2.rectangle(img, (x1, y2), (x2, y1), bcolor, 2)
         if text is not None:
             bottomLeftCornerOfText = (x1, y2)
             TopLeftCornerOfText = (x1, y1)

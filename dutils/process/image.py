@@ -10,8 +10,12 @@ def read_img(img_path):
     img = cv2.imread(img_path)
     return img
 
-def resize_img(img, imgh, imgw, dtype=np.float32):
-    img = cv2.resize(img, (imgw, imgh), interpolation=cv2.INTER_LINEAR).astype(dtype)
+def resize_img(img, imgh, imgw, dtype=np.float32, inter="linear"):
+    _map = {
+        "cubic": cv2.INTER_CUBIC,
+        "linear": cv2.INTER_LINEAR,
+    }
+    img = cv2.resize(img, (imgw, imgh), interpolation=_map[inter]).astype(dtype)
     return img
 
 def cat_2img(img1, img2):

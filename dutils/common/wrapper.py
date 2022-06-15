@@ -38,3 +38,14 @@ def wrap_args(name, *args, **kwargs):
             return res
         return _func
     return _args
+
+def wrap_time(func):
+    @wraps(func)
+    def _run_time(*args, **kwargs):
+        print("Call Function:", func.__name__)
+        tic = time.time()
+        res = func(*args, **kwargs)
+        toc = time.time()
+        print("Cost time", toc-tic)
+        return res
+    return _run_time
