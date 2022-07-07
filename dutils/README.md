@@ -6,6 +6,7 @@ Modules:
 - torch: deep-train tools for pytorch
 - metrics: get correaltion, statics for metrics
 - examples: some examples to use
+- multiprocess: some tools for mp exec
 
 # Visualize
 

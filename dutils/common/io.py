@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 import uuid
 __all__ = ["load_json", "save_pkl", "save_json", "load_pkl", "save_yaml", "load_yaml",
-          "assert_path", "read_roidb", "read_npz", "read_npy"]
+          "assert_path", "read_roidb", "read_npz", "read_npy", "merge_json_results"]
 
 
 def load_json(json_file):
@@ -79,3 +79,32 @@ def update_to_json(save_path, update_data):
     assert isinstance(data, dict)
     data.update(update_data)
     save_json(save_path, data)
+
+
+def merge_json_results(json_files):
+    data_type = type(load_json(json_files[0]))
+    if data_type in (list, tuple):
+        all_data = []
+        _type_flag = 0
+    elif data_type is dict:
+        all_data = {}
+        _type_flag = 1
+    else:
+        raise TypeError(data_type)
+    
+    for js_file in json_files:
+        data = load_json(js_file)
+
+        if _type_flag == 0:
+            if not isinstance(data, (list, tuple)):
+                print(js_file, 'data type error')
+                continue
+            all_data.extend(data)
+        
+        if _type_flag == 1:
+            if not isinstance(data, dict):
+                print(js_file, 'data type error')
+            all_data.update(data)
+
+    return all_data
+

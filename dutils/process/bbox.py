@@ -1,6 +1,6 @@
 # bbox 2d and 3d
 import numpy as np
-
+import warnings
 def points_in_bboxes(bboxes, points):
     # bboxes: Mx8x3, points Nx3, 3:xyz
     """
@@ -104,8 +104,45 @@ def cal_ioss_2d(bboxes1, bboxes2, eps=1e-5):
     return ioss
 
 
-
-def is_partial(bbox, h, w):
+def is_partial(bbox, h, w, ratio=0.02):
     x1, y1, x2, y2 = bbox[:4]
-    partial_flag = x1 < w * 0.02  or x2 > w * 0.98 or y1 < h * 0.02 or y2 > h * 0.98
+    partial_flag = x1 < w * ratio  or x2 > w * (1-ratio) or y1 < h * ratio or y2 > h * (1-ratio)
     return partial_flag
+
+def bbox_size_xyxy(bbox):
+    x1, y1, x2, y2 = bbox
+    return (y2-y1) * (x2-x1)
+
+
+def bbox_xyxy2xywh(bbox):
+    x1, y1, x2, y2 = bbox
+    assert x2>x1 and y2>y1
+    w = x2 - x1
+    h = y2 - y1
+    center_x = (x1 + x2) / 2.
+    center_y = (y1 + y2) / 2.
+    return center_x, center_y, w, h
+
+def bbox_xywh2xyxy(bbox):
+    cx, cy, w, h = bbox
+    x1 = cx - w / 2.
+    x2 = cx + w / 2.
+    y1 = cy - h / 2.
+    y2 = cy + h / 2.
+
+    if x1 < 0 or y1 < 0:
+        warnings.warn('function: bbox_xywh2xyxy \
+            bbox x1y1 is out of range, will set as zero, please check x2y2')
+        x1 = 0
+        y1 = 0
+
+    return x1, y1, x2, y2
+
+def expand_bbox_xyxy(bbox, ratio):
+    # wont check Out-of-Range
+    cx, cy, w, h = bbox_xyxy2xywh(bbox)
+    w *= ratio
+    h *= ratio
+    bbox = bbox_xywh2xyxy([cx, cy, w, h])
+    return bbox
+
