@@ -75,7 +75,7 @@ def cal_ious_2d(bboxes1, bboxes2, eps=1e-5):
     return ious
 
 def cal_ioss_2d(bboxes1, bboxes2, eps=1e-5):
-    # ios between bboxes
+    # ios between bboxes bboxes1: Nx4; bboxes2: Mx4
     bboxes1 = bboxes1.astype(np.float32)
     bboxes2 = bboxes2.astype(np.float32)
     rows = bboxes1.shape[0]
@@ -90,6 +90,7 @@ def cal_ioss_2d(bboxes1, bboxes2, eps=1e-5):
         ioss = np.zeros((cols, rows), dtype=np.float32)
         exchange = True
     area1 = (bboxes1[:, 2] - bboxes1[:, 0]) * (bboxes1[:, 3] - bboxes1[:, 1])
+    # less bbox shape
     for i in range(bboxes1.shape[0]):
         x_start = np.maximum(bboxes1[i, 0], bboxes2[:, 0])
         y_start = np.maximum(bboxes1[i, 1], bboxes2[:, 1])
