@@ -13,7 +13,8 @@ def get_install_requires():
         'imageio',
         'matplotlib',
         # 'mxnet',
-        'scikit-image'
+        'scikit-image',
+        'pyarrow'
     ]
 
     return install_requires
