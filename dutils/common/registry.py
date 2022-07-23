@@ -27,7 +27,7 @@ def is_seq_of(seq, expected_type, seq_type=None):
 
 
 class Registry:
-    """A registry to map strings to classes.
+    """A registry to map strings to "classes".
     Args:
         name (str): Registry name.
     """
@@ -151,7 +151,7 @@ def build_from_cfg(cfg, registry, default_args=None):
     Args:
         cfg (dict): Config dict. It should at least contain the key "type".
         registry (:obj:`Registry`): The registry to search the type from.
-        default_args (dict, optional): Default initialization arguments.
+        default_args (dict, optional): Default initialization arguments. Will rewrite cfg
     Returns:
         object: The constructed object.
     """

@@ -267,6 +267,9 @@ class MeterBuffer(defaultdict):
     def get_filtered_meter(self, filter_key="time"):
         return {k: v for k, v in self.items() if filter_key in k}
 
+    def get_meter(self, key):
+        return {k: v for k, v in self.items() if key == k}
+
     def update(self, values=None, **kwargs):
         if values is None:
             values = {}
